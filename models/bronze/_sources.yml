@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: ACMEMART
+    schema: BRONZE
+    tables:
+      - name: sales_csv
+        columns:
+          - name: transaction_id
