@@ -4,3 +4,6 @@ target/
 dbt_packages/
 logs/
 dbt_internal_packages/
+
+# VS Code workspace settings (developer-specific)
+.vscode/
