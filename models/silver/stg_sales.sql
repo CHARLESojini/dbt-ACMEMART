@@ -14,7 +14,10 @@ with
             try_to_date(
                 split_part(transaction_id, '-', 2), 'YYYYMMDD'
             ) as transaction_date_from_id,
-            try_cast(split_part(transaction_id, '-', 3) as integer) as daily_sequence,
+            coalesce(
+                try_cast(split_part(transaction_id, '-', 3) as integer),
+                0
+            ) as daily_sequence,
 
             -- identifiers
             cast(customer_id as varchar) as customer_id,
@@ -41,10 +44,18 @@ with
                 else false
             end as is_total_amount_valid,
 
-            -- timestamps
-            try_cast(transaction_timestamp as timestamp_ntz) as transaction_timestamp,
+            -- timestamps (handles mixed ISO and DD/MM/YYYY formats from source)
+            coalesce(
+                try_to_timestamp_ntz(transaction_timestamp),
+                try_to_timestamp_ntz(transaction_timestamp, 'DD/MM/YYYY HH24:MI'),
+                try_to_timestamp_ntz(transaction_timestamp, 'MM/DD/YYYY HH24:MI')
+            ) as transaction_timestamp,
             cast(
-                try_cast(transaction_timestamp as timestamp_ntz) as date
+                coalesce(
+                    try_to_timestamp_ntz(transaction_timestamp),
+                    try_to_timestamp_ntz(transaction_timestamp, 'DD/MM/YYYY HH24:MI'),
+                    try_to_timestamp_ntz(transaction_timestamp, 'MM/DD/YYYY HH24:MI')
+                ) as date
             ) as transaction_date,
 
             -- audit / lineage
