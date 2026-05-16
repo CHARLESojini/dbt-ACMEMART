@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: fct_daily_sales
+    description: "Daily store-level sales fact table. One row per (transaction_date, store_code) with revenue, volume, and data quality metrics. Used by downstream BI dashboards and operational reporting."
+    config:
+      contract:
+        enforced: false
+    columns:
+      - name: transaction_date
+        description: "Calendar date the transactions occurred. Part of composite primary key."
+        data_tests:
+          - not_null
+      - name: store_code
+        description: "Store identifier extracted from transaction_id. Part of composite primary key."
+        data_tests:
+          - not_null
+      - name: transaction_count
+        description: "Number of distinct transactions for this store on this date."
+        data_tests:
+          - not_null
+      - name: unique_customers
+        description: "Count of distinct customers transacting at this store on this date."
+        data_tests:
+          - not_null
+      - name: total_units_sold
+        description: "Sum of quantities across all transactions for this store-day."
+        data_tests:
+          - not_null
+      - name: gross_revenue
+        description: "Total revenue for this store-day. Sum of total_amount."
+        data_tests:
+          - not_null
+      - name: avg_transaction_value
+        description: "Average transaction size (basket value) for this store-day."
+        data_tests:
+          - not_null
+      - name: valid_transaction_rate_pct
+        description: "Percentage of transactions that passed quantity*unit_price = total_amount validation. Data quality KPI surfaced as a business metric. Below 100% indicates upstream data integrity issues."
+        data_tests:
+          - not_null
+      - name: last_loaded_at
+        description: "Most recent Airbyte ingestion timestamp for transactions in this row. Useful for tracking data recency."
