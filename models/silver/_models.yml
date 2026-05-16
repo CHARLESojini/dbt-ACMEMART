@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_sales
+    description: "Cleaned and typed sales transactions from the bronze layer"
+    columns:
+      - name: transaction_id
+        description: "Unique identifier for each sales transaction"
+        data_tests:
+          - unique
+          - not_null
+      - name: transaction_timestamp
+        description: "Transaction time, cast to timestamp_ntz for consistent handling"
+        data_tests:
+          - not_null
+      - name: transaction_date
+        description: "Date portion of transaction_timestamp, useful for daily aggregations"
+        data_tests:
+          - not_null
+      - name: is_total_amount_valid
+        description: "Boolean flag indicating whether total_amount passed validation rules"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
