@@ -2,42 +2,107 @@ version: 2
 
 models:
   - name: fct_daily_sales
-    description: "Daily store-level sales fact table. One row per (transaction_date, store_code) with revenue, volume, and data quality metrics. Used by downstream BI dashboards and operational reporting."
-    config:
-      contract:
-        enforced: false
+    description: "Daily store-level sales fact table. One row per (transaction_date, store_code) with revenue, volume, and data quality metrics."
     columns:
       - name: transaction_date
-        description: "Calendar date the transactions occurred. Part of composite primary key."
+        description: "Calendar date. Part of composite primary key."
         data_tests:
           - not_null
       - name: store_code
-        description: "Store identifier extracted from transaction_id. Part of composite primary key."
+        description: "Store identifier. Part of composite primary key."
         data_tests:
           - not_null
       - name: transaction_count
-        description: "Number of distinct transactions for this store on this date."
         data_tests:
           - not_null
       - name: unique_customers
-        description: "Count of distinct customers transacting at this store on this date."
         data_tests:
           - not_null
       - name: total_units_sold
-        description: "Sum of quantities across all transactions for this store-day."
         data_tests:
           - not_null
       - name: gross_revenue
-        description: "Total revenue for this store-day. Sum of total_amount."
         data_tests:
           - not_null
       - name: avg_transaction_value
-        description: "Average transaction size (basket value) for this store-day."
         data_tests:
           - not_null
       - name: valid_transaction_rate_pct
-        description: "Percentage of transactions that passed quantity*unit_price = total_amount validation. Data quality KPI surfaced as a business metric. Below 100% indicates upstream data integrity issues."
+        description: "Percentage of transactions that passed validation. Data quality KPI."
         data_tests:
           - not_null
       - name: last_loaded_at
-        description: "Most recent Airbyte ingestion timestamp for transactions in this row. Useful for tracking data recency."
+        description: "Most recent Airbyte ingestion timestamp."
+
+  - name: dim_stores
+    description: "Store dimension with lifetime activity metrics derived from transactions."
+    columns:
+      - name: store_code
+        description: "Primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: first_transaction_date
+        data_tests:
+          - not_null
+      - name: last_transaction_date
+        data_tests:
+          - not_null
+      - name: total_lifetime_transactions
+        data_tests:
+          - not_null
+
+  - name: dim_products
+    description: "Product dimension with deduplicated attributes and lifetime sales metrics."
+    columns:
+      - name: product_id
+        description: "Primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: product_name
+        data_tests:
+          - not_null
+      - name: category
+        data_tests:
+          - not_null
+      - name: current_unit_price
+        data_tests:
+          - not_null
+
+  - name: dim_customers
+    description: "Customer dimension with behavioral segmentation derived from purchase history."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_segment
+        description: "Behavioral segment based on lifetime spend."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['high_value', 'regular', 'occasional']
+      - name: total_lifetime_spend
+        data_tests:
+          - not_null
+
+  - name: dim_date
+    description: "Calendar dimension covering 2026 (one year). Reference data sourced from seed."
+    columns:
+      - name: date_key
+        description: "Primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: day_of_week
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+      - name: is_weekend
+        data_tests:
+          - not_null
