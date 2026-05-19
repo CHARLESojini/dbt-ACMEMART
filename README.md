@@ -35,7 +35,9 @@ The pipeline implements the medallion architecture pattern: raw → cleaned → 
 - `dim_customers` — customer dimension with behavioral segmentation
 - `dim_date` — calendar dimension from seed data
 
-> A visual architecture diagram is available at `docs/architecture.png` (coming soon).
+![Pipeline Architecture](docs/architecture.png)
+
+*End-to-end data flow from Google Drive through the Snowflake medallion architecture to Tableau dashboards.*
 
 ---
 
