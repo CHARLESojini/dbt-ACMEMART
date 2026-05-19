@@ -6,6 +6,25 @@ For the visual schema, see [`docs/erd.png`](erd.png).
 
 ---
 
+## About this document
+
+This is a **curated reference summary** intended for portfolio visibility and quick reference. The **canonical source of truth** for all column descriptions, tests, and metadata lives in the dbt YAML files:
+
+- Source definitions: [`models/bronze/_sources.yml`](../models/bronze/_sources.yml)
+- Silver model definitions: [`models/silver/_models.yml`](../models/silver/_models.yml)
+- Gold model definitions: [`models/gold/_models.yml`](../models/gold/_models.yml)
+
+To browse the interactive, auto-generated catalog with live schema and lineage:
+
+```bash
+dbt docs generate
+dbt docs serve   # opens http://localhost:8080
+```
+
+When schema or descriptions change in the YAML files, this document should be updated to match.
+
+---
+
 ## Layer Overview
 
 | Layer | Schema | Description |
@@ -208,4 +227,4 @@ All tests pass on every build. The test suite runs in the same `dbt build` comma
 
 ---
 
-*Last updated: May 18, 2026. To regenerate auto-documentation, run `dbt docs generate && dbt docs serve`.*
+*Last updated: May 18, 2026. For the interactive, auto-generated catalog, run `dbt docs generate && dbt docs serve`.*
