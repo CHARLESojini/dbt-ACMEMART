@@ -7,3 +7,7 @@ dbt_internal_packages/
 
 # VS Code workspace settings (developer-specific)
 .vscode/
+
+# macOS system files
+.DS_Store
+**/.DS_Store
